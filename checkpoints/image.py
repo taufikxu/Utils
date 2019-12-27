@@ -1,17 +1,98 @@
 import os
-import time
 import logging
-import operator
 import numpy as np
-import coloredlogs
 from PIL import Image
 
-import Utils
-from Utils.shortcuts import channel_last
+import math
 
+from Utils.shortcuts import channel_last
 from matplotlib import pyplot as plt
 
 plt.switch_backend("Agg")
+
+
+def make_grid(tensor,
+              nrow=10,
+              padding=2,
+              normalize=False,
+              vrange=None,
+              scale_each=False,
+              pad_value=0):
+
+    # if list of tensors, convert to a 4D mini-batch Tensor
+    nrow = 10 if nrow is None else nrow
+
+    if tensor.ndim == 2:  # single image H x W
+        tensor = np.expand_dims(tensor, 0)
+    if tensor.ndim == 3:  # single image
+        if tensor.shape[0] == 1:  # if single-channel, convert to 3-channel
+            tensor = np.concatenate((tensor, tensor, tensor), 0)
+        tensor = np.expand_dims(tensor, 0)
+
+    if tensor.ndim == 4 and tensor.shape[1] == 1:  # single-channel images
+        tensor = np.concatenate((tensor, tensor, tensor), 1)
+
+    if normalize is True:
+        tensor = np.copy(tensor)  # avoid modifying tensor in-place
+
+        def norm_ip(img, _min, _max):
+            img = np.clip(img, _min, _max)
+            img = (img - _min) / (_max - _min + 1e-5)
+            return img
+
+        def norm_range(t, _vrange):
+            if _vrange is not None:
+                return norm_ip(t, _vrange[0], _vrange[1])
+            else:
+                return norm_ip(t, float(t.min()), float(t.max()))
+
+        tensor = norm_range(tensor, vrange)
+
+    if tensor.shape[0] == 1:
+        return tensor.squeeze(0)
+
+    # make the mini-batch of images into a grid
+    nmaps = tensor.shape[0]
+    xmaps = min(nrow, nmaps)
+    ymaps = int(math.ceil(float(nmaps) / xmaps))
+    height, width = int(tensor.shape[2] + padding), int(tensor.shape[3] +
+                                                        padding)
+    num_channels = tensor.shape[1]
+    grid = np.zeros((num_channels, height * ymaps + padding,
+                     width * xmaps + padding)) + pad_value
+    k = 0
+    for y in range(ymaps):
+        for x in range(xmaps):
+            if k >= nmaps:
+                break
+            grid[:, y * height + padding:y * height + padding + height -
+                 padding, x * width + padding:x * width + padding + width -
+                 padding] = tensor[k]
+            k = k + 1
+    return grid
+
+
+def save_image(img,
+               name,
+               shape=10,
+               padding=2,
+               normalize=True,
+               vrange=None,
+               scale_each=False,
+               pad_value=0):
+
+    from PIL import Image
+    grid = make_grid(img,
+                     nrow=shape,
+                     padding=2,
+                     pad_value=0,
+                     normalize=normalize,
+                     vrange=vrange,
+                     scale_each=scale_each)
+    # Add 0.5 after unnormalizing to [0, 255] to round to nearest integer
+    ndarr = (grid * 255).transpose([1, 2, 0]).astype(np.uint8)
+    im = Image.fromarray(ndarr)
+    im.save(name)
 
 
 def plot_image(images, name, shape=None, figsize=None, row_names=None):
