@@ -26,7 +26,6 @@ class _my_argparse(_argparse.ArgumentParser):
 
 class _FlagValues(object):
     """Global container and accessor for flags and their values."""
-
     def __init__(self):
         self.__dict__["__flags"] = {}
         self.__dict__["__actions"] = {}

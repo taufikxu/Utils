@@ -3,10 +3,10 @@ import time
 import logging
 import operator
 import coloredlogs
-
+import pickle
 from Utils.shortcuts import get_logger
-
 from matplotlib import pyplot as plt
+import torchvision
 
 plt.switch_backend("Agg")
 
@@ -56,6 +56,47 @@ def build_logger(folder=None, args=None, logger_name=None):
     logger.info("#" * 120)
     logger.info("----------Configurable Parameters In this Model----------")
     for name, val in sorted_list:
-        logger.info("# " + ("%20s" % name) + ":\t" + str(get_list_name(val)))
+        logger.info("# " + ("%30s" % name) + ":\t" + str(get_list_name(val)))
     logger.info("#" * 120)
     return logger
+
+
+class Logger(object):
+    def __init__(self, log_dir='./logs'):
+        self.stats = dict()
+        self.log_dir = log_dir
+        if not os.path.exists(log_dir):
+            os.makedirs(log_dir)
+
+    def add(self, category, k, v, it):
+        if category not in self.stats:
+            self.stats[category] = {}
+        if k not in self.stats[category]:
+            self.stats[category][k] = []
+        self.stats[category][k].append((it, v))
+        # self.print_fn("Itera {}, {}'s {} is {}".format(it, category, k, v))
+
+    def add_imgs(self, imgs, class_name, it):
+        outdir = os.path.join(self.log_dir, class_name)
+        if not os.path.exists(outdir):
+            os.makedirs(outdir)
+        outfile = os.path.join(outdir, '%08d.png' % it)
+
+        imgs = imgs / 2 + 0.5
+        imgs = torchvision.utils.make_grid(imgs)
+        torchvision.utils.save_image(imgs, outfile, nrow=8)
+
+    def get_last(self, category, k, default=0.):
+        if category not in self.stats:
+            return default
+        elif k not in self.stats[category]:
+            return default
+        else:
+            return self.stats[category][k][-1][1]
+
+    def save_stats(self, filename=None):
+        if filename is None:
+            filename = "stat.pkl"
+        filename = os.path.join(self.log_dir, filename)
+        with open(filename, 'wb') as f:
+            pickle.dump(self.stats, f)
