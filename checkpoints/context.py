@@ -22,12 +22,12 @@ def save_context(filename, FLAGS, config):
     if FLAGS.results_folder == "Not Valid":
         FLAGS.results_folder = os.path.join(
             "./results/",
-            "({dirname})_({file})_({time})_({default_key})_({user_key})".
-            format(dirname=os.path.basename(os.getcwd()),
-                   file=filename.replace("/", "_"),
-                   time=time.strftime("%Y-%m-%d-%H-%M"),
-                   default_key=default_key,
-                   user_key=FLAGS.key))
+            "({dirname})_({file})/({file})_({time})_({default_key})_({user_key})"
+            .format(dirname=os.path.basename(os.getcwd()),
+                    file=filename.replace("/", "_"),
+                    time=time.strftime("%Y-%m-%d-%H-%M"),
+                    default_key=default_key,
+                    user_key=FLAGS.key))
 
     if os.path.exists(FLAGS.results_folder):
         folder, i = FLAGS.results_folder, 0
