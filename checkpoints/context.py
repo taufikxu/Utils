@@ -11,7 +11,8 @@ def save_context(filename, FLAGS, config):
     KEY_ARGUMENTS = config['KEY_ARGUMENTS']
 
     # Start to figure out the environment of the experiments, including path, etc.
-    if int(FLAGS.gpu) >= 0 and int(FLAGS.gpu) <= 7:
+    if FLAGS.gpu.lower() not in ['-1', 'none']:
+        # print(FLAGS.gpu)
         os.environ["CUDA_VISIBLE_DEVICES"] = str(FLAGS.gpu)
     os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
