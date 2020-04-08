@@ -15,9 +15,12 @@ def load_config(config_path):
     with open("./configs/0default.yaml", 'r') as f:
         default = yaml.load(f, Loader=yaml.FullLoader)
 
+    input_arguments = []
     # Include main configuration
     for k in cfg_special:
         if k in default and FLAGS.__getattr__(k) != default[k]:
+            if k not in ['key', 'gpu', 'data']:
+                input_arguments.append(k)
             tmp = "Default of {} is {}, config gives {}."
             tmp += "but we follow the args {}"
             print(
@@ -26,6 +29,7 @@ def load_config(config_path):
             continue
         v = cfg_special[k]
         FLAGS.__setattr__(k, v)
+    return input_arguments
 
 
 with open("./configs/0default.yaml", 'r') as f:
