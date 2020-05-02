@@ -1,12 +1,15 @@
-import os
-import time
 import logging
 import operator
-import coloredlogs
+import os
 import pickle
-from Utils.shortcuts import get_logger
-from matplotlib import pyplot as plt
+import socket
+import time
+
+import coloredlogs
 import torchvision
+from matplotlib import pyplot as plt
+
+from Utils.shortcuts import get_logger
 
 plt.switch_backend("Agg")
 
@@ -49,12 +52,11 @@ def build_logger(folder=None, args=None, logger_name=None):
             obj = obj.__name__
         return obj
 
-    if isinstance(args, dict) is not True:
-        args = vars(args)
-
     sorted_list = sorted(args.items(), key=operator.itemgetter(0))
+    host_info = "# " + ("%30s" % "Host Name") + ":\t" + socket.gethostname()
     logger.info("#" * 120)
     logger.info("----------Configurable Parameters In this Model----------")
+    logger.info(host_info)
     for name, val in sorted_list:
         logger.info("# " + ("%30s" % name) + ":\t" + str(get_list_name(val)))
     logger.info("#" * 120)

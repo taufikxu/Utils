@@ -32,14 +32,14 @@ class _FlagValues(object):
         self.__dict__["__parsed"] = False
 
     def _parse_flags(self, args=None):
-        result, unparsed = _global_parser.parse_known_args(args=args)
+        result = _global_parser.parse_args(args=args)
         for flag_name, val in vars(result).items():
             if val is MUST_INPUT:
                 raise Exception(
                     "{} must be specified, can not be None.".format(flag_name))
             self.__dict__["__flags"][flag_name] = val
         self.__dict__["__parsed"] = True
-        return unparsed
+        # return unparsed
 
     def get_dict(self):
         if not self.__dict__["__parsed"]:
