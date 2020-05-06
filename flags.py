@@ -26,6 +26,7 @@ class _my_argparse(_argparse.ArgumentParser):
 
 class _FlagValues(object):
     """Global container and accessor for flags and their values."""
+
     def __init__(self):
         self.__dict__["__flags"] = {}
         self.__dict__["__actions"] = {}
@@ -36,7 +37,8 @@ class _FlagValues(object):
         for flag_name, val in vars(result).items():
             if val is MUST_INPUT:
                 raise Exception(
-                    "{} must be specified, can not be None.".format(flag_name))
+                    "{} must be specified, can not be None.".format(flag_name)
+                )
             self.__dict__["__flags"][flag_name] = val
         self.__dict__["__parsed"] = True
         # return unparsed
@@ -46,6 +48,13 @@ class _FlagValues(object):
             self._parse_flags()
 
         return self.__dict__["__flags"]
+
+    def set_dict(self, newdict, overwrite=False):
+        if not self.__dict__["__parsed"]:
+            self._parse_flags()
+
+        for k in newdict:
+            self.__dict__["__flags"][k] = newdict[k]
 
     def __getattr__(self, name):
         """Retrieves the 'value' attribute of the flag --name."""
@@ -98,8 +107,6 @@ def DEFINE_boolean(*args, default=MUST_INPUT, docstring=None, **kwargs):
         return v.lower() in ("true", "t", "1")
 
     docstring = "" if docstring is None else docstring
-    _global_parser.add_argument_general(*args,
-                                        help=docstring,
-                                        default=default,
-                                        type=str2bool,
-                                        **kwargs)
+    _global_parser.add_argument_general(
+        *args, help=docstring, default=default, type=str2bool, **kwargs
+    )
