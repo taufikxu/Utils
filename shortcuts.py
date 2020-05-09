@@ -33,9 +33,7 @@ def channel_last(array_or_list, is_array=True):
     if isinstance(array_or_list, list) is not True:
         array_or_list = np.transpose(array_or_list, [0, 2, 3, 1])
     else:
-        array_or_list = [
-            np.transpose(item, [1, 2, 0]) for item in array_or_list
-        ]
+        array_or_list = [np.transpose(item, [1, 2, 0]) for item in array_or_list]
     return array_or_list
 
 
@@ -62,23 +60,22 @@ def seed():
 def xrange(iters, prefix=None, Epoch=None, **kwargs):
     if Epoch is not None and prefix is None:
         prefix = "Epoch " + str(Epoch)
-    return trange(int(iters),
-                  file=sys.stdout,
-                  leave=False,
-                  dynamic_ncols=True,
-                  desc=prefix,
-                  **kwargs)
+    return trange(
+        int(iters),
+        file=sys.stdout,
+        leave=False,
+        dynamic_ncols=True,
+        desc=prefix,
+        **kwargs
+    )
 
 
 def range_iterator(iters, prefix=None, Epoch=None, **kwargs):
     if Epoch is not None and prefix is None:
         prefix = "Epoch " + str(Epoch)
-    return tqdm(iters,
-                file=sys.stdout,
-                leave=False,
-                dynamic_ncols=True,
-                desc=prefix,
-                **kwargs)
+    return tqdm(
+        iters, file=sys.stdout, leave=False, dynamic_ncols=True, desc=prefix, **kwargs
+    )
 
 
 class processbar(object):
@@ -148,5 +145,4 @@ def query_yes_no(question, default="yes"):
         elif choice in valid:
             return valid[choice]
         else:
-            sys.stdout.write("Please respond with 'yes' or 'no' "
-                             "(or 'y' or 'n').\n")
+            sys.stdout.write("Please respond with 'yes' or 'no' " "(or 'y' or 'n').\n")

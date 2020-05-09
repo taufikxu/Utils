@@ -26,20 +26,22 @@ def get_ssl_data(x_train, y_train, num_labeled, n_y, seed=None):
     x_labelled = []
     y_labelled = []
     for j in range(n_y):
-        x_labelled.append(x_train[y_train == j][:num_labeled // n_y])
-        y_labelled.append(y_train[y_train == j][:num_labeled // n_y])
+        x_labelled.append(x_train[y_train == j][: num_labeled // n_y])
+        y_labelled.append(y_train[y_train == j][: num_labeled // n_y])
     x_train = np.concatenate(x_labelled)
     y_train = np.concatenate(y_labelled)
     return x_train, y_train
 
 
-def load_mnist_realval(path="/home/Data/mnist.pkl.gz",
-                       asimage=True,
-                       one_hot=False,
-                       validation=True,
-                       isTf=True,
-                       return_all=False,
-                       **kwargs):
+def load_mnist_realval(
+    path="/home/Data/mnist.pkl.gz",
+    asimage=True,
+    one_hot=False,
+    validation=True,
+    isTf=True,
+    return_all=False,
+    **kwargs
+):
     """
     return_all flag will return all of the data. It will overwrite validation
     nlabeled.
@@ -51,18 +53,18 @@ def load_mnist_realval(path="/home/Data/mnist.pkl.gz",
 
         def download_dataset(url, _path):
             print("Downloading data from %s" % url)
-            if sys.version_info > (2, ):
+            if sys.version_info > (2,):
                 import urllib.request as request
             else:
                 from urllib2 import Request as request
             request.urlretrieve(url, _path)
 
         download_dataset(
-            "http://www.iro.umontreal.ca/~lisa/deep/data/mnist"
-            "/mnist.pkl.gz", path)
+            "http://www.iro.umontreal.ca/~lisa/deep/data/mnist" "/mnist.pkl.gz", path
+        )
 
     with gzip.open(path, "rb") as f:
-        if sys.version_info > (3, ):
+        if sys.version_info > (3,):
             train_set, valid_set, test_set = pickle.load(f, encoding="latin1")
         else:
             train_set, valid_set, test_set = pickle.load(f)
@@ -97,13 +99,9 @@ def load_mnist_realval(path="/home/Data/mnist.pkl.gz",
     return x_train, y_train, x_test, y_test
 
 
-def load_cifar10(data_dir="/home/Data/cifar/",
-                 one_hot=False,
-                 isTf=True,
-                 **kwargs):
+def load_cifar10(data_dir="/home/Data/cifar/", one_hot=False, isTf=True, **kwargs):
     def file_name(ind):
-        return os.path.join(data_dir,
-                            "cifar-10-batches-py/data_batch_" + str(ind))
+        return os.path.join(data_dir, "cifar-10-batches-py/data_batch_" + str(ind))
 
     def unpickle_cifar_batch(file_):
         fo = open(file_, "rb")
@@ -120,7 +118,8 @@ def load_cifar10(data_dir="/home/Data/cifar/",
     y_train = y_train.astype("int32")
 
     test_data = unpickle_cifar_batch(
-        os.path.join(data_dir, "cifar-10-batches-py/test_batch"))
+        os.path.join(data_dir, "cifar-10-batches-py/test_batch")
+    )
     x_test = test_data["x"]
     y_test = test_data["y"].astype("int32")
 
@@ -133,13 +132,10 @@ def load_cifar10(data_dir="/home/Data/cifar/",
     return x_train, y_transform(y_train), x_test, y_transform(y_test)
 
 
-def load_cifar100(data_dir="/home/Data/cifar/",
-                  one_hot=False,
-                  isTf=True,
-                  **kwargs):
+def load_cifar100(data_dir="/home/Data/cifar/", one_hot=False, isTf=True, **kwargs):
     def unpickle_cifar_batch(file_, num):
         fo = open(file_, "rb")
-        if sys.version_info > (3, ):
+        if sys.version_info > (3,):
             tmp_data = pickle.load(fo, encoding="bytes")
         else:
             tmp_data = pickle.load(fo)
@@ -149,15 +145,15 @@ def load_cifar100(data_dir="/home/Data/cifar/",
         y_ = np.array(tmp_data[b"fine_labels"]).astype(np.float32)
         return {"x": x_, "y": y_}
 
-    train_data = unpickle_cifar_batch(os.path.join(data_dir,
-                                                   "cifar-100-python/train"),
-                                      num=50000)
+    train_data = unpickle_cifar_batch(
+        os.path.join(data_dir, "cifar-100-python/train"), num=50000
+    )
     x_train = train_data["x"]
     y_train = train_data["y"].astype("int32")
 
-    test_data = unpickle_cifar_batch(os.path.join(data_dir,
-                                                  "cifar-100-python/test"),
-                                     num=10000)
+    test_data = unpickle_cifar_batch(
+        os.path.join(data_dir, "cifar-100-python/test"), num=10000
+    )
     x_test = test_data["x"]
     y_test = test_data["y"].astype("int32")
 
@@ -195,16 +191,15 @@ def load_svhn(data_dir="/home/Data", one_hot=False, isTf=True, **kwargs):
     return train_x, y_transform(train_y), test_x, y_transform(test_y)
 
 
-def load_caltech101_img(path="./Data/",
-                        require_subset=['img', 'seg'],
-                        num_train_test=[30, 20],
-                        seed=1234):
+def load_caltech101_img(
+    path="./Data/", require_subset=["img", "seg"], num_train_test=[30, 20], seed=1234
+):
     with open(os.path.join(path, "Caltech101_label2index.pkl"), "rb") as f:
         label_index_dict = pickle.load(f)
 
     results_list = [[] for _ in require_subset]
     label_list = []
-    hf = h5py.File(os.path.join(path, "Caltech101.h5"), 'r')
+    hf = h5py.File(os.path.join(path, "Caltech101.h5"), "r")
     for k in hf.keys():
         if k not in label_index_dict:
             continue
@@ -212,8 +207,7 @@ def load_caltech101_img(path="./Data/",
         ind = 0
         while str(ind) in hf[k].keys():
             for require_ind, require_key in enumerate(require_subset):
-                results_list[require_ind].append(hf[k][str(ind) + "_" +
-                                                       require_key])
+                results_list[require_ind].append(hf[k][str(ind) + "_" + require_key])
             label_list.append(label)
             ind = ind + 1
 
@@ -257,8 +251,8 @@ def load_caltech101_path(path="./Data/", num_train_test=[30, 20], seed=1234):
     with open(os.path.join(path, "Caltech101_imgpath.pkl"), "rb") as f:
         path_label_dict = pickle.load(f)
 
-    imgpath_list = path_label_dict['img_path']
-    label_list = path_label_dict['label']
+    imgpath_list = path_label_dict["img_path"]
+    label_list = path_label_dict["label"]
 
     # label_list = np.asarray(label_list)
     # results_list = [np.asarray(item) for item in results_list]
@@ -297,12 +291,12 @@ def load_imagenet_path(path="./Data/", number_of_classes=1000):
     with open(os.path.join(path, "ImageNet_imgpath.pkl"), "rb") as f:
         path_label_dict = pickle.load(f)
 
-    train_img_path_label = path_label_dict['train']
-    valid_img_path_label = path_label_dict['validation']
+    train_img_path_label = path_label_dict["train"]
+    valid_img_path_label = path_label_dict["validation"]
 
     def get_subset(img_path_label):
-        imgpath_list = img_path_label['img_path']
-        label_list = img_path_label['label']
+        imgpath_list = img_path_label["img_path"]
+        label_list = img_path_label["label"]
         label_list = np.array(label_list)
 
         img_list, lab_list = [], []
