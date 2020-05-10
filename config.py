@@ -42,14 +42,12 @@ default_arguments = {
     "key": "None",
     "dataset": notValid,
     "results_folder": notValid,
+    "subfolder": notValid,
 }
 
 existed_args = list(default_arguments.keys())
 flags.DEFINE_argument(
-    "config_file",
-    type=str,
-    help="Path to config file.",
-    default="./configs/default.yml",
+    "config_file", type=str, help="Path to config file.",
 )
 for k in default_arguments:
     if k != "config_file":

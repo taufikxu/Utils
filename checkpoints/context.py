@@ -25,16 +25,19 @@ def save_context(filename, config):
         default_key += "(" + item + "_" + str(FLAGS.__getattr__(item)) + ")"
 
     if FLAGS.results_folder == notValid:
-        FLAGS.results_folder = os.path.join(
-            "./results/",
-            "({file})/({data})_({time})_({default_key})_({user_key})".format(
-                file=filename.replace("/", "_"),
-                data=FLAGS.dataset,
-                time=time.strftime("%Y-%m-%d-%H-%M-%S"),
-                default_key=default_key,
-                user_key=FLAGS.key,
-            ),
-        )
+        FLAGS.results_folder = "./results/"
+    if FLAGS.subfolder != notValid:
+        FLAGS.results_folder = os.path.join(FLAGS.results_folder, FLAGS.subfolder)
+    FLAGS.results_folder = os.path.join(
+        FLAGS.results_folder,
+        "({file})_({data})_({time})_({default_key})_({user_key})".format(
+            file=filename.replace("/", "_"),
+            data=FLAGS.dataset,
+            time=time.strftime("%Y-%m-%d-%H-%M-%S"),
+            default_key=default_key,
+            user_key=FLAGS.key,
+        ),
+    )
 
     if os.path.exists(FLAGS.results_folder):
         raise FileExistsError(
