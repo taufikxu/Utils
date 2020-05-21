@@ -24,9 +24,10 @@ def load_config(config_path):
     all_keys = FLAGS.get_dict()
     # Include main configuration
     for k in all_keys:
-        if k != "config_file" and all_keys[k] != notValid:
-            input_arguments.append(k)
-            print("Note!: input args: {} with value {}".format(k, FLAGS.__getattr__(k)))
+        if k in ignore_arguments or all_keys[k] == notValid:
+            continue
+        input_arguments.append(k)
+        print("Note!: input args: {} with value {}".format(k, FLAGS.__getattr__(k)))
     for k in cfg_special:
         if k in all_keys and all_keys[k] != notValid:
             print("Ignore {}".format(k))
@@ -43,6 +44,7 @@ default_arguments = {
     "results_folder": notValid,
     "subfolder": notValid,
 }
+ignore_arguments = default_arguments.keys()
 
 existed_args = list(default_arguments.keys())
 flags.DEFINE_argument(
