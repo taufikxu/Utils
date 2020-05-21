@@ -21,15 +21,14 @@ def load_config(config_path):
         cfg_special = yaml.load(f, Loader=yaml.FullLoader)
 
     input_arguments = []
-    all_keys = FLAGS.get_dict().keys()
+    all_keys = FLAGS.get_dict()
     # Include main configuration
     for k in all_keys:
-        if k in default_arguments:
-            continue
-        input_arguments.append(k)
-        print("Note!: input args: {} with value {}".format(k, FLAGS.__getattr__(k)))
+        if k != "config_file" and all_keys[k] != notValid:
+            input_arguments.append(k)
+            print("Note!: input args: {} with value {}".format(k, FLAGS.__getattr__(k)))
     for k in cfg_special:
-        if k in all_keys:
+        if k in all_keys and all_keys[k] != notValid:
             print("Ignore {}".format(k))
         else:
             FLAGS.__setattr__(k, cfg_special[k])
@@ -37,9 +36,9 @@ def load_config(config_path):
 
 
 default_arguments = {
-    "config_file": "./configs/default.yml",
-    "gpu": "-1",
-    "key": "None",
+    "config_file": notValid,
+    "gpu": notValid,
+    "key": notValid,
     "dataset": notValid,
     "results_folder": notValid,
     "subfolder": notValid,
