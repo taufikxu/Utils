@@ -12,9 +12,12 @@ from Utils import flags
 FLAGS = flags.FLAGS
 
 
-def save_context(filename, config):
-    FILES_TO_BE_SAVED = config["FILES_TO_BE_SAVED"]
-    KEY_ARGUMENTS = config["KEY_ARGUMENTS"]
+def save_context(filename, keys, files=None):
+    FILES_TO_BE_SAVED = ["./", "./configs", "./library"]
+    if files is not None:
+        assert isinstance(files, list)
+        FILES_TO_BE_SAVED += files
+    KEY_ARGUMENTS = keys
 
     if FLAGS.gpu.lower() not in ["-1", "none", notValid.lower()]:
         os.environ["CUDA_VISIBLE_DEVICES"] = str(FLAGS.gpu)
@@ -25,7 +28,7 @@ def save_context(filename, config):
         default_key += "(" + item + "_" + str(FLAGS.__getattr__(item)) + ")"
 
     if FLAGS.results_folder == notValid:
-        FLAGS.results_folder = "./results/"
+        FLAGS.results_folder = "./allresults/"
     if FLAGS.subfolder != notValid:
         FLAGS.results_folder = os.path.join(FLAGS.results_folder, FLAGS.subfolder)
     FLAGS.results_folder = os.path.join(
