@@ -1,5 +1,7 @@
 import argparse
+from argparse import Namespace
 import glob
+import os
 
 import yaml
 
@@ -33,6 +35,17 @@ def load_config(config_path):
             print("Ignore {}".format(k))
         else:
             FLAGS.__setattr__(k, cfg_special[k])
+
+    # Load other files
+    all_attrs = FLAGS.get_dict()
+    for k in all_attrs:
+        v = all_attrs[k]
+        if os.path.splitext(str(v))[1] in [".yml", ".yaml"]:
+            cpath = os.path.join("./configs", v)
+            if os.path.exists(cpath):
+                with open(cpath, "r") as f:
+                    tmp = Namespace(**yaml.load(f, Loader=yaml.FullLoader))
+                FLAGS.__setattr__(k, tmp)
     return input_arguments
 
 
