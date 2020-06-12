@@ -82,7 +82,7 @@ class Logger(object):
         self.stats[category][k].append((it, v))
         # self.print_fn("Itera {}, {}'s {} is {}".format(it, category, k, v))
 
-    def add_imgs(self, imgs, name=None, class_name=None, vrange=None):
+    def add_imgs(self, imgs, name=None, class_name=None, vrange=None, nrow=10):
         if class_name is None:
             outdir = self.log_dir
         else:
@@ -101,7 +101,18 @@ class Logger(object):
         imgs = (imgs - minv) / (maxv - minv + 1e-8)
         # print(torch.max(imgs), torch.min(imgs))
         imgs = torchvision.utils.make_grid(imgs)
-        torchvision.utils.save_image(imgs, outfile, nrow=8)
+        torchvision.utils.save_image(imgs, outfile, nrow=nrow)
+
+    def log_info(self, prefix, log_func, cats=None):
+        if cats is None:
+            cats = self.stats.keys()
+        prefix += "\n"
+        for cat in cats:
+            prefix += "|{}: ".format(cat)
+            for k in self.stats[cat]:
+                prefix += "{}:{:.5f} ".format(k, self.stats[cat][k][-1][1])
+            prefix += "\n"
+        log_func(prefix)
 
     def get_last(self, category, k, default=0.0):
         if category not in self.stats:
