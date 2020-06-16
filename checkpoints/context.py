@@ -25,7 +25,9 @@ def save_context(filename, keys, files=None):
 
     default_key = ""
     for item in KEY_ARGUMENTS:
-        default_key += "(" + item + "_" + str(FLAGS.__getattr__(item)) + ")"
+        default_key += (
+            "(" + item + "_" + str(FLAGS.__getattr__(item)).replace("/", "_") + ")"
+        )
 
     if FLAGS.results_folder == notValid:
         FLAGS.results_folder = "./allresults/"

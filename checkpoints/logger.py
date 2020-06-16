@@ -100,7 +100,7 @@ class Logger(object):
             maxv, minv = max(vrange), min(vrange)
         imgs = (imgs - minv) / (maxv - minv + 1e-8)
         # print(torch.max(imgs), torch.min(imgs))
-        imgs = torchvision.utils.make_grid(imgs)
+        # imgs = torchvision.utils.make_grid(imgs)
         torchvision.utils.save_image(imgs, outfile, nrow=nrow)
 
     def log_info(self, prefix, log_func, cats=None):
