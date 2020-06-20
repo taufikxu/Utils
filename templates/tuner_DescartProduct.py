@@ -4,13 +4,19 @@ import time
 import itertools
 
 # Args
-args_fortune = {"lr": [1, 2, 3], "batch_size": [1, 2, 3]}
-command_template = "python main.py ./configs/default.yaml"
+args_fortune = {
+    "config_file": ["./configs/baseline.yaml", "./configs/clc_gan.yaml"],
+    "gan_type": ["wgan", "standard"],
+}
+command_template = "python train_normalgan.py"
 key_sequence = []
 for k in args_fortune:
     key_sequence.append(k)
-    command_template += " -" + k + " {}"
-print(command_template)
+    if k == "config_file":
+        command_template += " {}"
+    else:
+        command_template += " -" + k + " {}"
+print(command_template, key_sequence)
 
 
 possible_value = []
